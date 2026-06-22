@@ -1,0 +1,72 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: cd apps/web && npm run build
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            apps/web/dist/**/*
+          body: |
+            # AKYBS Fitness Center Enterprise v${{ github.ref_name }}
+
+            🎉 **Modern 2026 SaaS Design System Release**
+
+            ## What's Included
+            - ✨ 10+ Reusable Components
+            - 🎨 Complete Design System
+            - 📊 Admin Dashboard with Analytics
+            - 👤 Member Dashboard
+            - 🌙 Dark Mode Support
+            - ♿ WCAG Level AA Accessibility
+            - 📱 Mobile-First Responsive Design
+
+            ## Build Artifacts
+            - **CSS**: 6.63 KB (1.79 KB gzipped)
+            - **JS**: 807.96 KB (232.80 KB gzipped)
+            - **Modules**: 2,801 bundled
+            - **Build Time**: 12.78 seconds
+
+            ## Getting Started
+            ```bash
+            git clone https://github.com/zafarazlay/akybs-fitness-center-enterprise.git
+            cd akybs-fitness-center-enterprise/apps/web
+            npm install
+            npm run dev
+            ```
+
+            Demo credentials:
+            - Admin: admin@akybs.com / Admin@123
+            - Member: member@akybs.com / Member@123
+
+            See [Documentation](../../docs/DESIGN_SYSTEM.md) for more details.
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
